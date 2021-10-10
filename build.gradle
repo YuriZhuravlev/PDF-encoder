@@ -3,11 +3,11 @@ plugins {
     id 'application'
 }
 
-group 'org.example'
+group 'ru.zhuravlev.pdfencoder'
 version '1.0-SNAPSHOT'
 
 application {
-    mainClass = 'io.ktor.server.netty.EngineMain'
+    mainClass = 'io.ktor.server.cio.EngineMain'
 }
 
 repositories {
@@ -21,6 +21,6 @@ tasks.create("stage") {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation 'io.ktor:ktor-server-core:1.6.4'
-    implementation 'io.ktor:ktor-server-netty:1.6.4'
+    implementation 'io.ktor:ktor-server-cio:1.6.4'
     implementation 'ch.qos.logback:logback-classic:1.2.6'
 }
