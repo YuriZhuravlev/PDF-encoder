@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<title>Шифрование pdf</title>
+<body>
+<div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);">
+    <div style="margin: 10px 0 10px 0;">
+        <div ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
+             style="border: 1px dashed black; height: 100px;">
+            <div style="padding: 5px 10px 5px 10px;">
+                Перетащите сюда
+            </div>
+        </div>
+        <input type="file" id="fileInput" style="margin: 10px 10px 0 0;" accept="application/pdf"/>
+        <button onclick="clearHandler(event)">Очистить ввод</button>
+    </div>
+    <form id="mainForm" onsubmit="sendHandler(event)">
+        Пароль:
+        <input type="password" name="password" style="width: 196px;"/>
+        <input type="submit" value="Отправить" style="width: 107px;">
+    </form>
+</div>
+
+
+<script>
+	// предотвращает загрузку файлов с форматом, отличным от pdf
+	// загружает только один файл
+	function dropHandler(e) {
+		e.preventDefault();
+		const file = e.dataTransfer.items[0].getAsFile();
+		if (file.type == "application/pdf"){
+			const dT = new DataTransfer();
+			dT.items.add(file);
+			fileInput.files = dT.files;
+		}else{
+			document.getElementById("fileInput").value = "";
+		}
+		
+	}
+	
+	// надо, чтобы файл не открывался при перетаскивании
+	function dragOverHandler(e) {
+		e.preventDefault();
+	}
+	
+	// запрос на сервер
+	async function sendHandler(e) {
+		e.preventDefault();
+		let data = new FormData(mainForm);
+		const password = data.get('password');
+		console.log(password);
+		if (!password) {
+			alert("Ошибка: введите пароль");
+		} else {
+			const file = document.getElementById('fileInput').files[0];
+			if (!file) {
+				alert("Ошибка: выберите файл");
+			} else {
+				
+				data.append('file', file);
+				// ===========[допилить]===========
+				/*const link = ""; // указать нужную ссылку
+				let response = await fetch(link, {
+					method: 'POST',
+					body: data
+				});
+				// возвращаемый от сервера резульата
+				let result = await response.json();*/
+			}
+		}
+		
+	}
+	
+	function clearHandler(e){
+		e.preventDefault();
+		document.getElementById("fileInput").value = "";
+	}
+
+
+</script>
+</body>
+</html>
