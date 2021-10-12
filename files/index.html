@@ -56,15 +56,15 @@
 				alert("Ошибка: выберите файл");
 			} else {
 				
-				data.append('file', file);
+				data.append('source_file', file);
 				// ===========[допилить]===========
-				/*const link = ""; // указать нужную ссылку
+				const link = window.location.href + "api/encode/"; // указать нужную ссылку
 				let response = await fetch(link, {
 					method: 'POST',
 					body: data
 				});
-				// возвращаемый от сервера резульата
-				let result = await response.json();*/
+				// возвращаемый от сервера результат
+				let result = await response.blob();
 			}
 		}
 		
