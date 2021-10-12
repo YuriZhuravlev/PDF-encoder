@@ -65,6 +65,8 @@
 				});
 				// возвращаемый от сервера результат
 				let result = await response.blob();
+				let download = window.URL.createObjectURL(result);
+                window.location.assign(download);
 			}
 		}
 		

@@ -15,8 +15,8 @@ fun Routing.routeApi() {
     route("/api") {
         post("/encode/") {
             try {
-                val request = EncodeController.encode(call.receiveMultipart())
-                call.respondFile(request ?: throw Exception("error with file"))
+                val request = EncodeController.encode(call.receiveMultipart()) ?: throw Exception("error with file")
+                call.respondFile(request)
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "{error: " + (e.message ?: "unknown") + "}")
             }
