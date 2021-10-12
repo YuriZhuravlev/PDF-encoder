@@ -3,6 +3,8 @@ plugins {
     id 'application'
 }
 
+ktor_version = properties.get("ktor_version")
+
 group 'ru.zhuravlev.pdfencoder'
 version '1.0-SNAPSHOT'
 
@@ -20,7 +22,9 @@ tasks.create("stage") {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation 'io.ktor:ktor-server-core:1.6.4'
-    implementation 'io.ktor:ktor-server-cio:1.6.4'
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-server-cio:$ktor_version"
     implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation "io.ktor:ktor-serialization:$ktor_version"
+    implementation "io.ktor:ktor-html-builder:$ktor_version"
 }
