@@ -1,84 +1,209 @@
 <!DOCTYPE html>
 <html>
 <title>Шифрование pdf</title>
-<body>
-<div style="position: absolute; top: 40%; left: 50%; transform: translate(-50%,-50%);">
-    <div style="margin: 10px 0 10px 0;">
-        <div ondrop="dropHandler(event);" ondragover="dragOverHandler(event);"
-             style="border: 1px dashed black; height: 100px;">
-            <div style="padding: 5px 10px 5px 10px;">
-                Перетащите сюда
+
+<body style="font-family: Arial, Helvetica, sans-serif;">
+<div style="position: absolute; left: 50%; transform: translate(-50%,0%);">
+    <h1>PDF encoder</h1>
+    <div>
+        <div style="margin: 10px 0 10px 0;">
+            <h2>Зашифровать</h2>
+            <h4>PDF-контейнер</h4>
+            <div ondrop="dropHandlerPdf(event, 0);" ondragover="dragOverHandler(event, this);"
+                 style="border: 1px dashed black; height: 100px;">
+                <div style="padding: 5px 10px 5px 10px; font-size: small;">
+                    Перетащите сюда pdf файл
+                </div>
+            </div>
+            <input type="file" id="fileInputPdfEncode" style="margin: 10px 10px 0 0;" accept="application/pdf"/>
+            <button onclick="clearHandler(event, 0)">Очистить ввод</button>
+        </div>
+
+        <div style="margin: 10px 0 10px 0;">
+            <h4>Данные для шифрования</h4>
+            <p><input id="rCF" name="radioContent" type="radio" checked onclick="selectOption(0)">Файл</p>
+            <p><input id="rCT" name="radioContent" type="radio" onclick="selectOption(1)">Текст</p>
+
+            <div id="radioContentFile" style="display: block; height: 140px;">
+                <div ondrop="dropHandler(event);" ondragover="dragOverHandler(event, this);"
+                     style="border: 1px dashed black; height: 100px;">
+                    <div style="padding: 5px 10px 5px 10px; font-size: small;">
+                        Перетащите сюда любой файл
+                    </div>
+                </div>
+                <input type="file" id="fileInputEncode" style="margin: 10px 10px 0 0;" accept="*"/>
+                <button onclick="clearHandler(event, 1)">Очистить ввод</button>
+            </div>
+
+            <div id="radioContentText" style="display: none; height: 140px;">
+					<textarea id="contentText"
+                              style="padding: 5px 10px 5px 10px; height: 100px; width: 100%; resize: none;"></textarea>
             </div>
         </div>
-        <input type="file" id="fileInput" style="margin: 10px 10px 0 0;" accept="application/pdf"/>
-        <button onclick="clearHandler(event)">Очистить ввод</button>
+
+        <form id="encodeForm" onsubmit="encode(event)">
+            Пароль:
+            <input type="password" name="password" style="width: 196px;"/>
+            <input type="submit" value="Отправить" style="width: 107px;"/>
+        </form>
     </div>
-    <form id="mainForm" onsubmit="sendHandler(event)">
-        Пароль:
-        <input type="password" name="password" style="width: 196px;"/>
-        <input type="submit" value="Отправить" style="width: 107px;">
-    </form>
+
+    <div style="margin: 100px 0 10px 0;">
+        <div style="margin: 10px 0 10px 0;">
+            <h2>Расшифровать</h2>
+            <div ondrop="dropHandlerPdf(event, 2);" ondragover="dragOverHandler(event, this);"
+                 style="border: 1px dashed black; height: 100px;">
+                <div style="padding: 5px 10px 5px 10px; font-size: small;">
+                    Перетащите сюда pdf файл с зашифрованными данными
+                </div>
+            </div>
+            <input type="file" id="fileInputPdfDecode" style="margin: 10px 10px 0 0;" accept="application/pdf"/>
+            <button onclick="clearHandler(event, 2)">Очистить ввод</button>
+        </div>
+        <form id="decodeForm" onsubmit="decode(event)">
+            Пароль:
+            <input type="password" name="password" style="width: 196px;"/>
+            <input type="submit" value="Отправить" style="width: 107px;"/>
+        </form>
+    </div>
 </div>
 
 
 <script>
-	// предотвращает загрузку файлов с форматом, отличным от pdf
-	// загружает только один файл
-	function dropHandler(e) {
-		e.preventDefault();
-		const file = e.dataTransfer.items[0].getAsFile();
-		if (file.type == "application/pdf"){
+		function dropHandler(e) {
+			e.preventDefault();
+			const file = e.dataTransfer.items[0].getAsFile();
 			const dT = new DataTransfer();
 			dT.items.add(file);
-			fileInput.files = dT.files;
-		}else{
-			document.getElementById("fileInput").value = "";
+			let item = document.getElementById("fileInputEncode");
+			item.files = dT.files;
 		}
-		
-	}
-	
-	// надо, чтобы файл не открывался при перетаскивании
-	function dragOverHandler(e) {
-		e.preventDefault();
-	}
-	
-	// запрос на сервер
-	async function sendHandler(e) {
-		e.preventDefault();
-		let data = new FormData(mainForm);
-		const password = data.get('password');
-		console.log(password);
-		if (!password) {
-			alert("Ошибка: введите пароль");
-		} else {
-			const file = document.getElementById('fileInput').files[0];
-			if (!file) {
-				alert("Ошибка: выберите файл");
+
+		// предотвращает загрузку файлов с форматом, отличным от pdf
+		// загружает только один файл
+		function dropHandlerPdf(e, number) {
+			e.preventDefault();
+			const file = e.dataTransfer.items[0].getAsFile();
+			let item;
+			if (number == 0) {
+				item = document.getElementById("fileInputPdfEncode");
 			} else {
-				
-				data.append('source_file', file);
-				// ===========[допилить]===========
-				const link = window.location.href + "api/encode/"; // указать нужную ссылку
-				let response = await fetch(link, {
-					method: 'POST',
-					body: data
-				});
-				// возвращаемый от сервера результат
-				let result = await response.blob();
-				let download = window.URL.createObjectURL(result);
-                window.location.assign(download);
+				item = document.getElementById("fileInputPdfDecode");
+			}
+			if (file.type == "application/pdf") {
+				const dT = new DataTransfer();
+				dT.items.add(file);
+				item.files = dT.files;
+			} else {
+				item.value = "";
 			}
 		}
-		
-	}
-	
-	function clearHandler(e){
-		e.preventDefault();
-		document.getElementById("fileInput").value = "";
-	}
 
+		// надо, чтобы файл не открывался при перетаскивании
+		function dragOverHandler(e) {
+			e.preventDefault();
+		}
+
+		async function encode(e) {
+			e.preventDefault();
+			let data = new FormData(encodeForm);
+			const password = data.get('password');
+			console.log(password);
+			if (!password) {
+				alert("Ошибка: введите пароль");
+			} else {
+				const sourceFile = document.getElementById('fileInputPdfEncode').files[0];
+				if (!sourceFile) {
+					alert("Ошибка: выберите файл-контейнер");
+				} else {
+					data.append('source_file', sourceFile);
+
+					const flag = document.getElementById('rCF');
+					if (flag.checked) {
+						const content = document.getElementById('fileInputEncode').files[0];
+						if (!content) {
+							alert("Ошибка: выберите данные для шифрования");
+						} else {
+							data.append('content', content);
+							encodeResponse(data);
+						}
+					} else {
+						const contentText = document.getElementById('contentText');
+						if (!contentText) {
+							alert("Ошибка: выберите данные для шифрования")
+						} else {
+							data.append('content', contentText);
+							encodeResponse(data);
+						}
+					}
+				}
+			}
+		}
+
+		async function encodeResponse(data) {
+			const link = window.location.href + "api/encode/";
+			let response = await fetch(link, {
+				method: 'POST',
+				body: data
+			});
+			// возвращаемый от сервера результат
+			let result = await response.blob();
+			console.log(response.headers.get('fileName'));
+			let download = window.URL.createObjectURL(result);
+			window.location.assign(download);
+		}
+
+		async function decode(e) {
+			e.preventDefault();
+			let data = new FormData(decodeForm);
+			const password = data.get('password');
+			if (!password) {
+				alert("Ошибка: введите пароль");
+			} else {
+				const sourceFile = document.getElementById('fileInputPdfDecode').files[0];
+				if (!sourceFile) {
+					alert("Ошибка: выберите файл-контейнер");
+				} else {
+					data.append('source_file', sourceFile);
+					const link = window.location.href + "api/decode/"; // указать нужную ссылку
+					let response = await fetch(link, {
+						method: 'POST',
+						body: data
+					});
+					// возвращаемый от сервера результат
+					let result = await response.blob();
+					console.log(response.headers.get('fileName'));
+					let download = window.URL.createObjectURL(result);
+					window.location.assign(download);
+				}
+			}
+		}
+
+		function clearHandler(e, number) {
+			e.preventDefault();
+			if (number == 0) {
+				document.getElementById("fileInputPdfEncode").value = "";
+			} else {
+				if (number == 1) {
+					document.getElementById("fileInputEncode").value = "";
+				} else {
+					document.getElementById("fileInputPdfDecode").value = "";
+				}
+			}
+		}
+
+		function selectOption(index) {
+			if (index == 0) {
+				document.getElementById("radioContentFile").style.display = 'block';
+				document.getElementById("radioContentText").style.display = 'none';
+			} else {
+				document.getElementById("radioContentFile").style.display = 'none';
+				document.getElementById("radioContentText").style.display = 'block';
+			}
+		}
 
 
 </script>
 </body>
+
 </html>
