@@ -44,6 +44,8 @@
         <form id="encodeForm" onsubmit="encode(event)">
             Пароль:
             <input type="password" name="password" style="width: 196px;"/>
+            Подтверждение:
+            <input type="password2" name="password2" style="width: 196px;"/>
             <input type="submit" value="Отправить" style="width: 107px;"/>
         </form>
     </div>
@@ -108,35 +110,40 @@
 			e.preventDefault();
 			let data = new FormData(encodeForm);
 			const password = data.get('password');
+			const password2 = data.get('password2');
 			console.log(password);
 			if (!password) {
 				alert("Ошибка: введите пароль");
 			} else {
-				const sourceFile = document.getElementById('fileInputPdfEncode').files[0];
-				if (!sourceFile) {
-					alert("Ошибка: выберите файл-контейнер");
-				} else {
-					data.append('source_file', sourceFile);
+			    if (password != password2) {
+			        alert("Ошибка: подтвердите пароль");
+			    } else {
+                    const sourceFile = document.getElementById('fileInputPdfEncode').files[0];
+                    if (!sourceFile) {
+                        alert("Ошибка: выберите файл-контейнер");
+                    } else {
+                        data.append('source_file', sourceFile);
 
-					const flag = document.getElementById('rCF');
-					if (flag.checked) {
-						const content = document.getElementById('fileInputEncode').files[0];
-						if (!content) {
-							alert("Ошибка: выберите данные для шифрования");
-						} else {
-							data.append('content', content);
-							encodeResponse(data);
-						}
-					} else {
-						const contentText = document.getElementById('contentText');
-						if (!contentText) {
-							alert("Ошибка: выберите данные для шифрования")
-						} else {
-							data.append('content', contentText);
-							encodeResponse(data);
-						}
-					}
-				}
+                        const flag = document.getElementById('rCF');
+                        if (flag.checked) {
+                            const content = document.getElementById('fileInputEncode').files[0];
+                            if (!content) {
+                                alert("Ошибка: выберите данные для шифрования");
+                            } else {
+                                data.append('content', content);
+                                encodeResponse(data);
+                            }
+                        } else {
+                            const contentText = document.getElementById('contentText');
+                            if (!contentText) {
+                                alert("Ошибка: выберите данные для шифрования")
+                            } else {
+                                data.append('content', contentText);
+                                encodeResponse(data);
+                            }
+                        }
+                    }
+                }
 			}
 		}
 
