@@ -9,10 +9,6 @@ class RequestEncode(
     var nameContent: String? = null,
     var content: InputStream? = null
 ) {
-    fun correct(): Boolean {
-        return sourceFile != null && password != null && content != null
-    }
-
     companion object {
         const val sourceFile = "source_file"
         const val content = "content"

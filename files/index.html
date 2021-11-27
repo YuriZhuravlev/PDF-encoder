@@ -111,7 +111,6 @@
 			let data = new FormData(encodeForm);
 			const password = data.get('password');
 			const password2 = data.get('password2');
-			console.log(password);
 			if (!password) {
 				alert("Ошибка: введите пароль");
 			} else {
@@ -138,7 +137,7 @@
                             if (!contentText) {
                                 alert("Ошибка: выберите данные для шифрования")
                             } else {
-                                data.append('content', contentText);
+                                data.append('content', contentText.value);
                                 encodeResponse(data);
                             }
                         }

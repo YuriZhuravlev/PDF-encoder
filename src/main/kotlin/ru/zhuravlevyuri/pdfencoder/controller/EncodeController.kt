@@ -12,7 +12,6 @@ import kotlin.random.Random
 
 object EncodeController {
     private const val DEFAULT_NAME_FILE = "text.txt"
-    private const val CIPHER_NAME = "Blowfish"
 
     suspend fun encode(multiPartData: MultiPartData): ByteArray {
         val request = parse(multiPartData)
@@ -71,9 +70,9 @@ object EncodeController {
 
     private fun encodeData(data: ByteArray, key: ByteArray): ByteArray {
         val sks = SecretKeySpec(key, CIPHER_NAME)
-        val c: Cipher = Cipher.getInstance(CIPHER_NAME);
-        c.init(Cipher.ENCRYPT_MODE, sks);
-        return c.doFinal(data);
+        val c: Cipher = Cipher.getInstance(CIPHER_NAME)
+        c.init(Cipher.ENCRYPT_MODE, sks)
+        return c.doFinal(data)
     }
 
     private fun PdfDictionary.put(key: String, data: ByteArray) {
