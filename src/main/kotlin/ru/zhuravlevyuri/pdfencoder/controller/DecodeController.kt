@@ -1,16 +1,53 @@
 package ru.zhuravlevyuri.pdfencoder.controller
 
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.kernel.pdf.PdfName
+import com.itextpdf.kernel.pdf.PdfReader
+import com.itextpdf.kernel.pdf.PdfStream
 import io.ktor.http.content.*
-import ru.zhuravlevyuri.pdfencoder.data.FileManager
-import ru.zhuravlevyuri.pdfencoder.data.FileManager.createFile
 import ru.zhuravlevyuri.pdfencoder.model.RequestDecode
-import ru.zhuravlevyuri.pdfencoder.utils.write
-import java.io.File
+import java.io.InputStream
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
 
 object DecodeController {
     suspend fun decode(
         multiPartData: MultiPartData
-    ): File? {
+    ): ByteArray {
+        val request = parse(multiPartData)
+
+        return decodeData(
+            data = request.sourceFile!!.getData(hashKey(request.password!!)),
+            key = hashCipher(request.password!!)
+        )
+    }
+
+    private fun InputStream.getData(key: String): ByteArray {
+        val document = PdfDocument(PdfReader(this))
+        val pdfName = PdfName(key)
+        if (document.numberOfPages == 0) throw Exception("number of pages equal 0")
+        for (i in 1..document.numberOfPages) {
+            val page = document.getPage(i)
+            val contents = page.pdfObject.get(PdfName.Contents)
+            val data = when {
+                (contents is PdfStream && contents.containsKey(pdfName)) -> {
+                    contents.get(pdfName)
+                }
+                (page.pdfObject.containsKey(pdfName)) -> {
+                    page.pdfObject.get(pdfName)
+                }
+                else -> {
+                    null
+                }
+            }
+            if (data is PdfStream) {
+                return data.bytes
+            }
+        }
+        throw Exception("encoded data not found")
+    }
+
+    private suspend fun parse(multiPartData: MultiPartData): RequestDecode {
         val request = RequestDecode()
         multiPartData.forEachPart { part ->
             when (part) {
@@ -20,10 +57,7 @@ object DecodeController {
                 }
                 is PartData.FileItem -> {
                     if (part.name == RequestDecode.sourceFile) {
-                        val name = part.originalFileName ?: throw Exception("empty filename \"source_file\"")
-                        val file = createFile(name)
-                        write(part.streamProvider(), file)
-                        request.sourceFile = file
+                        request.sourceFile = part.streamProvider()
                     }
                 }
                 is PartData.BinaryItem -> {
@@ -31,8 +65,16 @@ object DecodeController {
                 }
             }
         }
-        // TODO("Создать логику расшифровки")
-        request.sourceFile?.let { FileManager.allocate(it) }
-        return request.sourceFile
+
+        if (request.sourceFile == null) throw Exception("empty \"source_file\"")
+        if (request.password == null) throw Exception("empty \"password\"")
+        return request
+    }
+
+    private fun decodeData(data: ByteArray, key: ByteArray): ByteArray {
+        val sks = SecretKeySpec(key, CIPHER_NAME)
+        val c: Cipher = Cipher.getInstance(CIPHER_NAME)
+        c.init(Cipher.DECRYPT_MODE, sks)
+        return c.doFinal(data)
     }
 }

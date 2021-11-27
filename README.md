@@ -1,1 +1,16 @@
-The project created in the [Gradle](https://ktor.io/docs/gradle.html) tutorial.
+# Разработка программы скрытия и извлечения информации в PDF-файлах
+
+<b>Цель работы:</b> разработка программы скрытия и извлечения информации в PDF-файлах.
+
+<b>Язык программирования:</b> Kotlin, JavaScript
+
+<b>Среда программирования:</b> IntelliJ IDEA
+
+Проект интерфейса программы:
+Программа - rest-api сервис с web интерфейсом.
+
+rest api интерфейс:
+https://pdf-encoder.herokuapp.com/api/
+
+Главный экран программы:
+https://pdf-encoder.herokuapp.com/

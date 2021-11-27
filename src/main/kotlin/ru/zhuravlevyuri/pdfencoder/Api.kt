@@ -16,7 +16,9 @@ fun Routing.routeApi() {
         post("/encode/") {
             try {
                 val request = EncodeController.encode(call.receiveMultipart()) ?: throw Exception("error with file")
-                call.respondFile(request)
+                call.respondOutputStream(ContentType.Application.Zip, HttpStatusCode.OK) {
+                    this.write(request)
+                }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "{error: " + (e.message ?: "unknown") + "}")
             }
@@ -24,7 +26,9 @@ fun Routing.routeApi() {
         post("/decode/") {
             try {
                 val request = DecodeController.decode(call.receiveMultipart())
-                call.respondFile(request ?: throw Exception("error with file"))
+                call.respondOutputStream(ContentType.Application.Zip, HttpStatusCode.OK) {
+                    this.write(request)
+                }
             } catch (e: Exception) {
                 call.respond(HttpStatusCode.BadRequest, "{error: " + (e.message ?: "unknown") + "}")
             }

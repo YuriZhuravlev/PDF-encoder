@@ -72,10 +72,10 @@ object ApiDocs {
                         tr {
                             td {
                                 attributes["width"] = "400px"
-                                +"source_file: string<binary>\t"
+                                +"string<binary>\t"
                             }
                             td {
-                                +"файл, в который записаны данные"
+                                +"файл, в который записаны данные в zip архиве"
                             }
                         }
                     }
@@ -128,10 +128,10 @@ object ApiDocs {
                         tr {
                             td {
                                 attributes["width"] = "400px"
-                                +"content: string<binary>\t"
+                                +"string<binary>\t"
                             }
                             td {
-                                +"расшифрованные данные"
+                                +"расшифрованные данные в zip архиве"
                             }
                         }
                     }
