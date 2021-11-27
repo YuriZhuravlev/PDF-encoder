@@ -1,9 +1,9 @@
 package ru.zhuravlevyuri.pdfencoder.model
 
-import java.io.File
+import java.io.InputStream
 
 class RequestDecode(
-    var sourceFile: File? = null,
+    var sourceFile: InputStream? = null,
     var password: String? = null
 ) {
     fun correct(): Boolean {

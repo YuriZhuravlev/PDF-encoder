@@ -1,11 +1,12 @@
 package ru.zhuravlevyuri.pdfencoder.model
 
-import java.io.File
 import java.io.InputStream
 
 class RequestEncode(
-    var sourceFile: File? = null,
+    var nameSourceFile: String? = null,
+    var sourceFile: InputStream? = null,
     var password: String? = null,
+    var nameContent: String? = null,
     var content: InputStream? = null
 ) {
     fun correct(): Boolean {

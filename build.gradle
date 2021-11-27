@@ -22,9 +22,12 @@ tasks.create("stage") {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "com.google.guava:guava:31.0.1-jre"
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-server-cio:$ktor_version"
-    implementation 'ch.qos.logback:logback-classic:1.2.6'
+    implementation 'ch.qos.logback:logback-classic:1.2.7'
     implementation "io.ktor:ktor-serialization:$ktor_version"
     implementation "io.ktor:ktor-html-builder:$ktor_version"
+
+    implementation 'com.itextpdf:itext7-core:7.1.17'
 }
