@@ -83,6 +83,19 @@ object EncodeController {
         val outputStream = ByteArrayOutputStream()
         val document = PdfDocument(PdfReader(this), PdfWriter(outputStream))
         if (document.numberOfPages == 0) throw Exception("number of pages equal 0")
+        val pdfName = PdfName(key)
+        for (i in 1..document.numberOfPages) {
+            val page = document.getPage(i)
+            val contents = page.pdfObject.get(PdfName.Contents)
+            when {
+                (contents is PdfStream && contents.containsKey(pdfName)) -> {
+                    contents.remove(pdfName)
+                }
+                (page.pdfObject.containsKey(pdfName)) -> {
+                    page.pdfObject.remove(pdfName)
+                }
+            }
+        }
         val page = Random.nextInt(1, document.numberOfPages + 1)
         document.getPage(page).let {
             val contents = it.pdfObject.get(PdfName.Contents)
