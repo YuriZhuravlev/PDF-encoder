@@ -12,7 +12,7 @@
             <div ondrop="dropHandlerPdf(event, 0);" ondragover="dragOverHandler(event, this);"
                  style="border: 1px dashed black; height: 100px;">
                 <div style="padding: 5px 10px 5px 10px; font-size: small;">
-                    Перетащите сюда pdf файл
+                    Перетащите сюда pdf файл (не больше 20МБ)
                 </div>
             </div>
             <input type="file" id="fileInputPdfEncode" style="margin: 10px 10px 0 0;" accept="application/pdf"/>
@@ -28,7 +28,7 @@
                 <div ondrop="dropHandler(event);" ondragover="dragOverHandler(event, this);"
                      style="border: 1px dashed black; height: 100px;">
                     <div style="padding: 5px 10px 5px 10px; font-size: small;">
-                        Перетащите сюда любой файл
+                        Перетащите сюда любой файл (не больше 20МБ)
                     </div>
                 </div>
                 <input type="file" id="fileInputEncode" style="margin: 10px 10px 0 0;" accept="*"/>
@@ -75,10 +75,14 @@
 		function dropHandler(e) {
 			e.preventDefault();
 			const file = e.dataTransfer.items[0].getAsFile();
-			const dT = new DataTransfer();
-			dT.items.add(file);
-			let item = document.getElementById("fileInputEncode");
-			item.files = dT.files;
+			if (file.prototype.size <= 20971520) {
+				const dT = new DataTransfer();
+				dT.items.add(file);
+				let item = document.getElementById("fileInputEncode");
+				item.files = dT.files;
+			} else {
+				item.value = "";
+			}
 		}
 
 		// предотвращает загрузку файлов с форматом, отличным от pdf
@@ -92,7 +96,7 @@
 			} else {
 				item = document.getElementById("fileInputPdfDecode");
 			}
-			if (file.type == "application/pdf") {
+			if (file.type == "application/pdf" && (number != 0 || file.prototype.size <= 20971520)) {
 				const dT = new DataTransfer();
 				dT.items.add(file);
 				item.files = dT.files;
@@ -118,23 +122,23 @@
 			        alert("Ошибка: подтвердите пароль");
 			    } else {
                     const sourceFile = document.getElementById('fileInputPdfEncode').files[0];
-                    if (!sourceFile) {
-                        alert("Ошибка: выберите файл-контейнер");
+                    if (!sourceFile || sourceFile.size > 20971520) {
+                        alert("Ошибка: выберите файл-контейнер (не более 20МБ)");
                     } else {
                         data.append('source_file', sourceFile);
 
                         const flag = document.getElementById('rCF');
                         if (flag.checked) {
                             const content = document.getElementById('fileInputEncode').files[0];
-                            if (!content) {
-                                alert("Ошибка: выберите данные для шифрования");
+                            if (!content || content.size > 20971520) {
+                                alert("Ошибка: выберите данные для шифрования (не более 20МБ)");
                             } else {
                                 data.append('content', content);
                                 encodeResponse(data);
                             }
                         } else {
                             const contentText = document.getElementById('contentText');
-                            if (!contentText) {
+                            if (!contentText || contentText.value.length == 0) {
                                 alert("Ошибка: выберите данные для шифрования")
                             } else {
                                 data.append('content', contentText.value);
