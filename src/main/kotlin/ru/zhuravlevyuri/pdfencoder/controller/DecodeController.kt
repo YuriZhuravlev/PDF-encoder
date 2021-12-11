@@ -6,6 +6,7 @@ import com.itextpdf.kernel.pdf.PdfReader
 import com.itextpdf.kernel.pdf.PdfStream
 import io.ktor.http.content.*
 import ru.zhuravlevyuri.pdfencoder.model.RequestDecode
+import ru.zhuravlevyuri.pdfencoder.utils.isZip
 import java.io.InputStream
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -72,9 +73,13 @@ object DecodeController {
     }
 
     private fun decodeData(data: ByteArray, key: ByteArray): ByteArray {
-        val sks = SecretKeySpec(key, CIPHER_NAME)
-        val c: Cipher = Cipher.getInstance(CIPHER_NAME)
-        c.init(Cipher.DECRYPT_MODE, sks)
-        return c.doFinal(data)
+        return if (isZip(data))
+            data
+        else {
+            val sks = SecretKeySpec(key, CIPHER_NAME)
+            val c: Cipher = Cipher.getInstance(CIPHER_NAME)
+            c.init(Cipher.DECRYPT_MODE, sks)
+            c.doFinal(data)
+        }
     }
 }

@@ -7,11 +7,13 @@ class RequestEncode(
     var sourceFile: InputStream? = null,
     var password: String? = null,
     var nameContent: String? = null,
-    var content: InputStream? = null
+    var content: InputStream? = null,
+    var requireEncrypt: Boolean = false
 ) {
     companion object {
         const val sourceFile = "source_file"
         const val content = "content"
         const val password = "password"
+        const val requireEncrypt = "encrypt"
     }
 }

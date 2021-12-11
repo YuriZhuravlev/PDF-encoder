@@ -2,9 +2,11 @@
 <html>
 <title>Шифрование pdf</title>
 
-<body style="font-family: Arial, Helvetica, sans-serif;">
+<body style="font-family: Arial, Helvetica, sans-serif;" link="#26282b" vlink="#26282b" alink="#26282b">
 <div style="position: absolute; left: 50%; transform: translate(-50%,0%);">
-    <h1>PDF encoder</h1>
+    <h1>PDF encoder <a
+            style="margin-left: 60px; font-size: 60%; border-radius: 10px; background: #e5e5e5; padding: 4px 10px 4px 10px;"
+            href="https://github.com/YuriZhuravlev/PDF-encoder">Информация</a></h1>
     <div>
         <div style="margin: 10px 0 10px 0;">
             <h2>Зашифровать</h2>
@@ -40,8 +42,10 @@
                               style="padding: 5px 10px 5px 10px; height: 100px; width: 100%; resize: none;"></textarea>
             </div>
         </div>
-
         <form id="encodeForm" onsubmit="encode(event)">
+            <p>
+                <input type="checkbox" name="encrypt" style="margin: 8px;"/><a>Зашифровать мои данные</a>
+            </p>
             Пароль:
             <input type="password" name="password" style="width: 196px;"/>
             Подтверждение:
@@ -115,6 +119,8 @@
 			let data = new FormData(encodeForm);
 			const password = data.get('password');
 			const password2 = data.get('password2');
+			const checked = data.get('encrypt');
+			data.set('encrypt', checked == "on");
 			if (!password) {
 				alert("Ошибка: введите пароль");
 			} else {
