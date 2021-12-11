@@ -42,6 +42,10 @@ fun createZip(name: String, data: ByteArray): ByteArrayOutputStream {
     return out
 }
 
+fun isZip(data: ByteArray): Boolean {
+    return ZipInputStream(ByteArrayInputStream(data)).nextEntry != null
+}
+
 fun unZip(input: InputStream): Pair<String, ByteArray> {
     var bytes: ByteArray? = null
     var name = "data"

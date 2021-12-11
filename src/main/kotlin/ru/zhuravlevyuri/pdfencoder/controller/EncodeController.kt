@@ -12,17 +12,23 @@ import kotlin.random.Random
 
 object EncodeController {
     private const val DEFAULT_NAME_FILE = "text.txt"
+    private const val PURE = "pure"
 
     suspend fun encode(multiPartData: MultiPartData): ByteArray {
         val request = parse(multiPartData)
 
-        val data = encodeData(
-            data = createZip(
-                name = request.nameContent ?: DEFAULT_NAME_FILE,
-                data = request.content!!.readBytes()
-            ).toByteArray(),
-            key = hashCipher(request.password!!)
-        )
+        val data = createZip(
+            name = request.nameContent ?: DEFAULT_NAME_FILE,
+            data = request.content!!.readBytes()
+        ).toByteArray().let { zip ->
+            if (request.requireEncrypt)
+                encodeData(
+                    data = zip,
+                    key = hashCipher(request.password!!)
+                )
+            else
+                zip
+        }
 
         return createZip(
             name = request.nameSourceFile!!,
@@ -41,6 +47,7 @@ object EncodeController {
                     when (part.name) {
                         RequestEncode.password -> request.password = part.value
                         RequestEncode.content -> request.content = part.value.byteInputStream()
+                        RequestEncode.requireEncrypt -> request.requireEncrypt = part.value == true.toString()
                     }
                 }
                 is PartData.FileItem -> {
