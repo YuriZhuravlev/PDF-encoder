@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html>
-<title>Шифрование pdf</title>
+<title>PDF-encoder</title>
 
-<body style="font-family: Arial, Helvetica, sans-serif;" link="#26282b" vlink="#26282b" alink="#26282b">
+<body style="font-family: Arial, Helvetica, sans-serif;" link="#26282b"
+      vlink="#26282b"
+      alink="#26282b">
 <div style="position: absolute; left: 50%; transform: translate(-50%,0%);">
-    <h1>PDF encoder <a
-            style="margin-left: 60px; font-size: 60%; border-radius: 10px; background: #e5e5e5; padding: 4px 10px 4px 10px;"
-            href="https://github.com/YuriZhuravlev/PDF-encoder">Информация</a></h1>
+    <h1>
+        PDF-encoder
+        <a style="margin-left: 60px; font-size: 60%; border-radius: 10px; background: #e5e5e5; padding: 4px 10px 4px 10px;"
+           href="https://github.com/YuriZhuravlev/PDF-encoder"
+        >
+            Информация
+        </a>
+    </h1>
     <div>
         <div style="margin: 10px 0 10px 0;">
-            <h2>Зашифровать</h2>
+            <h2>Скрыть</h2>
             <h4>PDF-контейнер</h4>
             <div ondrop="dropHandlerPdf(event, 0);" ondragover="dragOverHandler(event, this);"
                  style="border: 1px dashed black; height: 100px;">
@@ -22,7 +29,7 @@
         </div>
 
         <div style="margin: 10px 0 10px 0;">
-            <h4>Данные для шифрования</h4>
+            <h4>Данные для скрытия</h4>
             <p><input id="rCF" name="radioContent" type="radio" checked onclick="selectOption(0)">Файл</p>
             <p><input id="rCT" name="radioContent" type="radio" onclick="selectOption(1)">Текст</p>
 
@@ -44,7 +51,8 @@
         </div>
         <form id="encodeForm" onsubmit="encode(event)">
             <p>
-                <input type="checkbox" name="encrypt" style="margin: 8px;"/><a>Зашифровать мои данные</a>
+                <input type="checkbox" name="encrypt" style="margin: 8px;"/>
+                <a>Зашифровать мои данные</a>
             </p>
             Пароль:
             <input type="password" name="password" style="width: 196px;"/>
@@ -56,11 +64,11 @@
 
     <div style="margin: 100px 0 10px 0;">
         <div style="margin: 10px 0 10px 0;">
-            <h2>Расшифровать</h2>
+            <h2>Извлечение</h2>
             <div ondrop="dropHandlerPdf(event, 2);" ondragover="dragOverHandler(event, this);"
                  style="border: 1px dashed black; height: 100px;">
                 <div style="padding: 5px 10px 5px 10px; font-size: small;">
-                    Перетащите сюда pdf файл с зашифрованными данными
+                    Перетащите сюда pdf файл со скрытыми данными
                 </div>
             </div>
             <input type="file" id="fileInputPdfDecode" style="margin: 10px 10px 0 0;" accept="application/pdf"/>
@@ -95,12 +103,12 @@
 			e.preventDefault();
 			const file = e.dataTransfer.items[0].getAsFile();
 			let item;
-			if (number == 0) {
+			if (number === 0) {
 				item = document.getElementById("fileInputPdfEncode");
 			} else {
 				item = document.getElementById("fileInputPdfDecode");
 			}
-			if (file.type == "application/pdf" && (number != 0 || file.prototype.size <= 20971520)) {
+			if (file.type === "application/pdf" && (number != 0 || file.prototype.size <= 20971520)) {
 				const dT = new DataTransfer();
 				dT.items.add(file);
 				item.files = dT.files;
@@ -120,7 +128,7 @@
 			const password = data.get('password');
 			const password2 = data.get('password2');
 			const checked = data.get('encrypt');
-			data.set('encrypt', checked == "on");
+			data.set('encrypt', checked === "on");
 			if (!password) {
 				alert("Ошибка: введите пароль");
 			} else {
@@ -144,7 +152,7 @@
                             }
                         } else {
                             const contentText = document.getElementById('contentText');
-                            if (!contentText || contentText.value.length == 0) {
+                            if (!contentText || contentText.value.length === 0) {
                                 alert("Ошибка: выберите данные для шифрования")
                             } else {
                                 data.append('content', contentText.value);
@@ -197,10 +205,10 @@
 
 		function clearHandler(e, number) {
 			e.preventDefault();
-			if (number == 0) {
+			if (number === 0) {
 				document.getElementById("fileInputPdfEncode").value = "";
 			} else {
-				if (number == 1) {
+				if (number === 1) {
 					document.getElementById("fileInputEncode").value = "";
 				} else {
 					document.getElementById("fileInputPdfDecode").value = "";
@@ -209,7 +217,7 @@
 		}
 
 		function selectOption(index) {
-			if (index == 0) {
+			if (index === 0) {
 				document.getElementById("radioContentFile").style.display = 'block';
 				document.getElementById("radioContentText").style.display = 'none';
 			} else {
@@ -217,6 +225,10 @@
 				document.getElementById("radioContentText").style.display = 'block';
 			}
 		}
+
+
+
+
 
 
 </script>
