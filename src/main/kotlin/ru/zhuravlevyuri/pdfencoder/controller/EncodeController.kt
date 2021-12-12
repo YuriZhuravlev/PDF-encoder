@@ -1,18 +1,15 @@
 package ru.zhuravlevyuri.pdfencoder.controller
 
-import com.itextpdf.kernel.pdf.*
 import io.ktor.http.content.*
 import ru.zhuravlevyuri.pdfencoder.model.RequestEncode
+import ru.zhuravlevyuri.pdfencoder.repository.Encode.encodeData
+import ru.zhuravlevyuri.pdfencoder.repository.Encode.insertData
+import ru.zhuravlevyuri.pdfencoder.repository.hashCipher
+import ru.zhuravlevyuri.pdfencoder.repository.hashKey
 import ru.zhuravlevyuri.pdfencoder.utils.createZip
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import javax.crypto.Cipher
-import javax.crypto.spec.SecretKeySpec
-import kotlin.random.Random
 
 object EncodeController {
     private const val DEFAULT_NAME_FILE = "text.txt"
-    private const val PURE = "pure"
 
     suspend fun encode(multiPartData: MultiPartData): ByteArray {
         val request = parse(multiPartData)
@@ -73,46 +70,5 @@ object EncodeController {
         if (request.content == null) throw Exception("empty \"content\"")
         if (request.password == null) throw Exception("empty \"password\"")
         return request
-    }
-
-    private fun encodeData(data: ByteArray, key: ByteArray): ByteArray {
-        val sks = SecretKeySpec(key, CIPHER_NAME)
-        val c: Cipher = Cipher.getInstance(CIPHER_NAME)
-        c.init(Cipher.ENCRYPT_MODE, sks)
-        return c.doFinal(data)
-    }
-
-    private fun PdfDictionary.put(key: String, data: ByteArray) {
-        put(PdfName(key), PdfStream(data))
-    }
-
-    private fun InputStream.insertData(data: ByteArray, key: String): ByteArrayOutputStream {
-        val outputStream = ByteArrayOutputStream()
-        val document = PdfDocument(PdfReader(this), PdfWriter(outputStream))
-        if (document.numberOfPages == 0) throw Exception("number of pages equal 0")
-        val pdfName = PdfName(key)
-        for (i in 1..document.numberOfPages) {
-            val page = document.getPage(i)
-            val contents = page.pdfObject.get(PdfName.Contents)
-            when {
-                (contents is PdfStream && contents.containsKey(pdfName)) -> {
-                    contents.remove(pdfName)
-                }
-                (page.pdfObject.containsKey(pdfName)) -> {
-                    page.pdfObject.remove(pdfName)
-                }
-            }
-        }
-        val page = Random.nextInt(1, document.numberOfPages + 1)
-        document.getPage(page).let {
-            val contents = it.pdfObject.get(PdfName.Contents)
-            if (contents is PdfStream) {
-                contents.put(key, data)
-            } else {
-                it.pdfObject.put(key, data)
-            }
-        }
-        document.close()
-        return outputStream
     }
 }

@@ -60,6 +60,14 @@ object ApiDocs {
                                 +"пароль"
                             }
                         }
+                        tr {
+                            td {
+                                +"encrypt: true | false\t"
+                            }
+                            td {
+                                +"шифровать сообщение"
+                            }
+                        }
                     }
                 }
             }
