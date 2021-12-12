@@ -1,4 +1,4 @@
-package ru.zhuravlevyuri.pdfencoder.controller
+package ru.zhuravlevyuri.pdfencoder.repository
 
 import com.google.common.hash.Hashing
 

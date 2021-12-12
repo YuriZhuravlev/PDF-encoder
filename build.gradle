@@ -30,4 +30,11 @@ dependencies {
     implementation "io.ktor:ktor-html-builder:$ktor_version"
 
     implementation 'com.itextpdf:itext7-core:7.1.17'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
 }
